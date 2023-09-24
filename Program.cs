@@ -9,7 +9,7 @@ class Program
     static void Main(string[] args)
     {
         Console.WriteLine("Este console irá corrigir a data dos arquivos de imagem e vídeo que tiverem as mesmas incorretas.");
-        Console.WriteLine("Arquivos nos formatos jpg, png, mp4, gif e avi serão corrigidos.");
+        Console.WriteLine("Arquivos nos formatos jpg, png, mp4, 3gp, gif e avi serão corrigidos.");
         Console.WriteLine("O console extrai a data correta dos arquivos baseando-se no nome dos mesmos, que geralmente contém esta informação.\n");
         Console.WriteLine("Informe o caminho completo da pasta onde as fotos que terão suas datas corrigidas se encontram:");
         string diretorio = Console.ReadLine();
@@ -52,6 +52,7 @@ class Program
                 || f.ToLower().EndsWith(".jpeg")
                 || f.ToLower().EndsWith(".png")
                 || f.ToLower().EndsWith(".gif")
+                || f.ToLower().EndsWith(".3gp")
                 || f.ToLower().EndsWith(".mp4")
                 || f.ToLower().EndsWith(".avi"));
 
