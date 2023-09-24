@@ -9,7 +9,7 @@ class Program
     {
         Console.WriteLine("Este console irá corrigir a data dos arquivos de imagem e vídeo que tiverem as mesmas incorretas.");
         Console.WriteLine("Arquivos nos formatos jpg, png, mp4, gif e avi serão corrigidos.");
-        Console.WriteLine("O console extrai a data correta dos arquivos baseando-se no nome dos mesmos, que geralmente contém esta informação.");
+        Console.WriteLine("O console extrai a data correta dos arquivos baseando-se no nome dos mesmos, que geralmente contém esta informação.\n");
         Console.WriteLine("Informe o caminho completo da pasta onde as fotos que terão suas datas corrigidas se encontram:");
         string diretorio = Console.ReadLine();
         Console.WriteLine("");
@@ -54,10 +54,11 @@ class Program
                 || f.ToLower().EndsWith(".mp4")
                 || f.ToLower().EndsWith(".avi"));
 
-        Console.WriteLine($"Total de arquivos encontrados: {arquivos.Count()}");
+        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Total de arquivos encontrados: {arquivos.Count()}");
         Console.WriteLine("");
         int totalArquivosCorrigidos = 0;
         int totalArquivosComFalha = 0;
+        int index = 1;
 
         foreach (var arquivo in arquivos)
         {
@@ -74,7 +75,7 @@ class Program
                 {
                     arquivoInfo.CreationTime = novaData;
                     arquivoInfo.LastWriteTime = novaData;
-                    Console.WriteLine($"Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
+                    Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
                     totalArquivosCorrigidos++;
                 }
             }
@@ -82,10 +83,12 @@ class Program
             {
                 using (StreamWriter logWriter = new StreamWriter($@"{pasta}\log.txt", true))
                 {
-                    logWriter.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] Erro: {e.Message} - Arquivo: {arquivo} \n\n {e.StackTrace}\n");
+                    Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Falha ao alterar o arquivo {arquivo}");
+                    logWriter.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Erro: {e.Message} - Arquivo: {arquivo} \n\n {e.StackTrace}\n");
                     totalArquivosComFalha++;
                 }
             }
+            index++;
         }
 
         Console.WriteLine("");
