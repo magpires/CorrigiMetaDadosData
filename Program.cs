@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 class Program
 {
@@ -45,6 +47,33 @@ class Program
         }
     }
 
+    static DateTime ObtemTiradoEm(DateTime dataAtual, DateTime criadoEm, DateTime modificadoEm, string caminhoArquivo)
+    {
+        Image image = Image.FromFile(caminhoArquivo);
+        int[] propertyIds = image.PropertyIdList;
+
+        var possuiCriadoEm = propertyIds.Contains(36867);
+
+        if (possuiCriadoEm)
+        {
+            PropertyItem propriedadeTiradoEm = image.GetPropertyItem(36867);
+            string dataStringTiradoEm = System.Text.Encoding.ASCII.GetString(propriedadeTiradoEm.Value).Replace("\0", "");
+            DateTime dataObjetoTiradoEm = DateTime.ParseExact(dataStringTiradoEm, "yyyy:MM:dd HH:mm:ss", null);
+            image.Dispose();
+
+            var dataHorasDiferentes = (dataObjetoTiradoEm != criadoEm) || (dataObjetoTiradoEm != modificadoEm);
+
+            if (dataHorasDiferentes)
+                return dataObjetoTiradoEm;
+            else
+                return dataAtual;
+        }
+        else
+        {
+            return dataAtual;
+        }
+    }
+
     static void AlteraDataHoraArquivos(string pasta)
     {
         var arquivos = Directory.GetFiles(pasta, "*.*")
@@ -75,12 +104,19 @@ class Program
                 FileInfo arquivoInfo = new FileInfo(arquivo);
                 string dataString = ExtrairDataDoNome(arquivoInfo.Name);
                 DateTime dataCorrigida = DateTime.ParseExact(dataString, "yyyyMMdd", null);
-                DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.CreationTime.Hour, arquivoInfo.CreationTime.Minute, arquivoInfo.CreationTime.Second);
+                DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.CreationTime.Hour, arquivoInfo.CreationTime.Minute, arquivoInfo.CreationTime.Second); ;
 
-                var datasDiferentes = (dataCorrigida.Date != arquivoInfo.CreationTime.Date) || (dataCorrigida.Date != arquivoInfo.LastWriteTime.Date);
+                var datasDiferentes = (novaData.Date != arquivoInfo.CreationTime.Date) || (novaData.Date != arquivoInfo.LastWriteTime.Date);
 
                 if (datasDiferentes)
                 {
+                    var arquivoImagemJpg = arquivoInfo.Extension.ToLower() == ".jpg"
+                                    || arquivoInfo.Extension.ToLower() == ".jpeg";
+
+                    if (arquivoImagemJpg)
+                        novaData = ObtemTiradoEm(novaData, arquivoInfo.CreationTime, arquivoInfo.LastWriteTime, arquivoInfo.FullName) ;
+
+                    novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.CreationTime.Hour, arquivoInfo.CreationTime.Minute, arquivoInfo.CreationTime.Second);
                     arquivoInfo.CreationTime = novaData;
                     arquivoInfo.LastWriteTime = novaData;
                     Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
