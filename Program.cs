@@ -58,9 +58,9 @@ class Program
 
         Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Total de arquivos encontrados: {arquivos.Count()}");
         Console.WriteLine("Pressione qualquer tecla para continuar ou 0 para sair.");
-        string opcao = Console.ReadLine();
+        var opcao = Console.ReadKey();
 
-        if (opcao == "0")
+        if (opcao.KeyChar == '0')
             Environment.Exit(0);
 
         Console.WriteLine("");
