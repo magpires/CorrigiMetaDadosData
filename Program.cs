@@ -116,7 +116,6 @@ class Program
                     if (arquivoImagemJpg)
                         novaData = ObtemTiradoEm(novaData, arquivoInfo.CreationTime, arquivoInfo.LastWriteTime, arquivoInfo.FullName) ;
 
-                    novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.CreationTime.Hour, arquivoInfo.CreationTime.Minute, arquivoInfo.CreationTime.Second);
                     arquivoInfo.CreationTime = novaData;
                     arquivoInfo.LastWriteTime = novaData;
                     Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
