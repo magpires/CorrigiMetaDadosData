@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 class Program
 {
@@ -54,7 +55,13 @@ class Program
                 || f.ToLower().EndsWith(".mp4")
                 || f.ToLower().EndsWith(".avi"));
 
-        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Total de arquivos encontrados: {arquivos.Count()}");
+        Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Total de arquivos encontrados: {arquivos.Count()}");
+        Console.WriteLine("Pressione qualquer tecla para continuar ou 0 para sair.");
+        string opcao = Console.ReadLine();
+
+        if (opcao == "0")
+            Environment.Exit(0);
+
         Console.WriteLine("");
         int totalArquivosCorrigidos = 0;
         int totalArquivosComFalha = 0;
