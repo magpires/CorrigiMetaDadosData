@@ -118,7 +118,7 @@ class Program
 
                     arquivoInfo.CreationTime = novaData;
                     arquivoInfo.LastWriteTime = novaData;
-                    Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
+                    Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
                     totalArquivosCorrigidos++;
                 }
             }
