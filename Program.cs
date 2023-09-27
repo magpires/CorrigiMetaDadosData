@@ -47,7 +47,7 @@ class Program
         }
     }
 
-    static DateTime ObtemTiradoEm(DateTime dataAtual, DateTime criadoEm, DateTime modificadoEm, string caminhoArquivo)
+    static DateTime ObtemTiradoEm(DateTime dataAtual, DateTime modificadoEm, string caminhoArquivo)
     {
         Image image = Image.FromFile(caminhoArquivo);
         int[] propertyIds = image.PropertyIdList;
@@ -61,7 +61,7 @@ class Program
             DateTime dataObjetoTiradoEm = DateTime.ParseExact(dataStringTiradoEm, "yyyy:MM:dd HH:mm:ss", null);
             image.Dispose();
 
-            var dataHorasDiferentes = (dataObjetoTiradoEm != criadoEm) || (dataObjetoTiradoEm != modificadoEm);
+            var dataHorasDiferentes = dataObjetoTiradoEm != modificadoEm;
 
             if (dataHorasDiferentes)
                 return dataObjetoTiradoEm;
@@ -104,9 +104,9 @@ class Program
                 FileInfo arquivoInfo = new FileInfo(arquivo);
                 string dataString = ExtrairDataDoNome(arquivoInfo.Name);
                 DateTime dataCorrigida = DateTime.ParseExact(dataString, "yyyyMMdd", null);
-                DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.CreationTime.Hour, arquivoInfo.CreationTime.Minute, arquivoInfo.CreationTime.Second);
+                DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.LastWriteTime.Hour, arquivoInfo.LastWriteTime.Minute, arquivoInfo.LastWriteTime.Second);
 
-                var datasDiferentes = (novaData.Date != arquivoInfo.CreationTime.Date) || (novaData.Date != arquivoInfo.LastWriteTime.Date);
+                var datasDiferentes = novaData.Date != arquivoInfo.LastWriteTime.Date;
 
                 if (datasDiferentes)
                 {
@@ -114,11 +114,10 @@ class Program
                                     || arquivoInfo.Extension.ToLower() == ".jpeg";
 
                     if (arquivoImagemJpg)
-                        novaData = ObtemTiradoEm(novaData, arquivoInfo.CreationTime, arquivoInfo.LastWriteTime, arquivoInfo.FullName) ;
+                        novaData = ObtemTiradoEm(novaData, arquivoInfo.LastWriteTime, arquivoInfo.FullName) ;
 
-                    arquivoInfo.CreationTime = novaData;
                     arquivoInfo.LastWriteTime = novaData;
-                    Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} - Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
+                    Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} - Data corrigida com sucesso para o arquivo {arquivoInfo.Name}");
                     totalArquivosCorrigidos++;
                 }
             }
