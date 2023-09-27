@@ -104,7 +104,7 @@ class Program
                 FileInfo arquivoInfo = new FileInfo(arquivo);
                 string dataString = ExtrairDataDoNome(arquivoInfo.Name);
                 DateTime dataCorrigida = DateTime.ParseExact(dataString, "yyyyMMdd", null);
-                DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.CreationTime.Hour, arquivoInfo.CreationTime.Minute, arquivoInfo.CreationTime.Second); ;
+                DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.CreationTime.Hour, arquivoInfo.CreationTime.Minute, arquivoInfo.CreationTime.Second);
 
                 var datasDiferentes = (novaData.Date != arquivoInfo.CreationTime.Date) || (novaData.Date != arquivoInfo.LastWriteTime.Date);
 
@@ -118,7 +118,7 @@ class Program
 
                     arquivoInfo.CreationTime = novaData;
                     arquivoInfo.LastWriteTime = novaData;
-                    Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
+                    Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} - Data de criação e atualização corrigida com sucesso para o arquivo {arquivoInfo.Name}");
                     totalArquivosCorrigidos++;
                 }
             }
