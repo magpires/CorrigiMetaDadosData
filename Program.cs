@@ -83,7 +83,7 @@ class Program
                 || f.ToLower().EndsWith(".gif")
                 || f.ToLower().EndsWith(".3gp")
                 || f.ToLower().EndsWith(".mp4")
-                || f.ToLower().EndsWith(".avi"));
+                || f.ToLower().EndsWith(".avi")).ToArray();
 
         Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Total de arquivos encontrados: {arquivos.Count()}");
         Console.WriteLine("Pressione qualquer tecla para continuar ou 0 para sair.");
