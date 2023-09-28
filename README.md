@@ -1,18 +1,21 @@
 # Corrige Metadados de Data
 
-## Apresentação
-Algumas vezes pode acontecer de notarmos em nossa galeria de fotos algumas fotos com datas erradas. Você busca por uma foto do verão e se guia pela data, porém a mesma não é encontrada. Com muito custo você localiza a foto, porém, percebe que a mesma encontra-se com as informações de data referentes ao inverno. O que será que aconteceu?
+## ApresentaÃ§Ã£o
+Algumas vezes pode acontecer de notarmos em nossa galeria de fotos algumas fotos com datas erradas. VocÃª busca por uma foto do verÃ£o e se guia pela data, porÃ©m a mesma nÃ£o Ã© encontrada. Com muito custo vocÃª localiza a foto, porÃ©m, percebe que a mesma encontra-se com as informaÃ§Ãµes de data referentes ao inverno. O que serÃ¡ que aconteceu?
 
-Há inúmeros motivos para isso ter ocorrido, podemos citar alguns
+HÃ¡ inÃºmeros motivos para isso ter ocorrido, podemos citar alguns
 
 - Data incorreta do celular
-- Edições na foto que alteram a data de atualização para o dia em que a foto foi editada
-- Cópia de arquivos de um diretório para outro
-- Utilização de programas para comprimir arquivos de mídia
+- EdiÃ§Ãµes na foto que alteram a data de atualizaÃ§Ã£o para o dia em que a foto foi editada
+- CÃ³pia de arquivos de um diretÃ³rio para outro
+- UtilizaÃ§Ã£o de programas para comprimir arquivos de mÃ­dia
 
-Estes e outros motivos acabam alterando os metadados das fotos e vídeos, provocando assim, uma desorganização em sua biblioteca de fotos.
+Estes e outros motivos acabam alterando os metadados das fotos e vÃ­deos, provocando assim, uma desorganizaÃ§Ã£o em sua biblioteca de fotos.
 
-A ferramenta dá suporte aos principais arquivos de mídia, são eles:
+## A SoluÃ§Ã£o
+Pensando nisso, desenvolvi esta ferramenta para corrigir a data e hora destes arquivos.
+
+A ferramenta dÃ¡ suporte aos principais arquivos de mÃ­dia, sÃ£o eles:
 - .jpg (jpeg)
 - .png
 - .gif
@@ -20,33 +23,30 @@ A ferramenta dá suporte aos principais arquivos de mídia, são eles:
 - .mp4
 - .avi
 
-## A Solução
-Pensando nisso, desenvolvi esta ferramenta para corrigir a data e hora destes arquivos.
-
 ### Funcionamento
-Seu fincionamento é relativamente simples. A maioria destas fotos possuem em seus nomes de arquivo a data em que foi tirada a foto. Alguns contam com a hora também. Além disso, algumas fotos tem o metadado "Tirado em" com a informação exata de quando aquela imagem foi fotografada, dentre outras propriedades. A ferramenta funciona capturando estas informações e alterando o metadado que informa a data da última modificação do arquivo (metadado este que geralmente é utilizado pelas galerias de fotos para se situarem no dia em que a foto foi tirada).
+Seu fincionamento Ã© relativamente simples. A maioria destas fotos possuem em seus nomes de arquivo a data em que foi tirada a foto. Alguns contam com a hora tambÃ©m. AlÃ©m disso, algumas fotos tem o metadado "Tirado em" com a informaÃ§Ã£o exata de quando aquela imagem foi fotografada, dentre outras propriedades. A ferramenta funciona capturando estas informaÃ§Ãµes e alterando o metadado que informa a data da Ãºltima modificaÃ§Ã£o do arquivo (metadado este que geralmente Ã© utilizado pelas galerias de fotos para se situarem no dia em que a foto foi tirada).
 
-> **AVISO IMPORTANTE!** Isso fará com que todos os arquivos de fotos e vídeos presentes na pasta informada sejam modificados. Tenha sempre uma cópia de segurança dos mesmos para que caso ocorra quaisquer erro, você possa recuperá-los.
+> **AVISO IMPORTANTE!** Isso farÃ¡ com que todos os arquivos de fotos e vÃ­deos presentes na pasta informada sejam modificados. Tenha sempre uma cÃ³pia de seguranÃ§a dos mesmos para que caso ocorra quaisquer erro, vocÃª possa recuperÃ¡-los.
 
 ### Como utilizar
-Antes de mais nada, é preciso que você tenha o .Net Core 6.0 instalado em sua máquina. Você pode baixa-lo diretamente do site oficial disponível [AQUI](https://dotnet.microsoft.com/pt-br/download/dotnet/6.0).
+Antes de mais nada, Ã© preciso que vocÃª tenha o .Net Core 6.0 instalado em sua mÃ¡quina. VocÃª pode baixa-lo diretamente do site oficial disponÃ­vel [AQUI](https://dotnet.microsoft.com/pt-br/download/dotnet/6.0).
 
-Após ter o .Net Core 6.0 instalado, seguiremos o passo a passo, que é relativamente simples.
+ApÃ³s ter o .Net Core 6.0 instalado, seguiremos o passo a passo, que Ã© relativamente simples.
 
-1. Ao executar a ferramenta, a mesma pedirá que informe o caminho da pasta onde seus arquivos de imagem e vídeo se encontram. Você pode informar o diretório da seguinte forma
+1. Ao executar a ferramenta, a mesma pedirÃ¡ que informe o caminho da pasta onde seus arquivos de imagem e vÃ­deo se encontram. VocÃª pode informar o diretÃ³rio da seguinte forma
    ```
    C:\local\completo\onde\se\encontram\as\fotos\e\videos
    ```
-   **DICA!** Substitua "C" pela letra da unidade onde se encontra a pasta com suas fotos e vídeos.
-2. Após informar a ferramenta o local onde as fotos e vídeos se encontram, ela irá exibir uma contagem de arquivos de mídias encontrados e te dará duas opções sendo elas
+   **DICA!** Substitua "C" pela letra da unidade onde se encontra a pasta com suas fotos e vÃ­deos.
+2. ApÃ³s informar a ferramenta o local onde as fotos e vÃ­deos se encontram, ela irÃ¡ exibir uma contagem de arquivos de mÃ­dias encontrados e te darÃ¡ duas opÃ§Ãµes sendo elas
    - Apertar qualquer tecla do seu teclado para continuar
    - Apertar 0 para sair
-3. Caso escolha continuar com a execução, ela começará a trabalhar em seus arquivos, informando sobre o sucesso ou falha na operação de cada um deles
-4. Após a execução completa da ferramenta, ela irá exibir na tela o total de arquivos corrigidos e o total de arquivos com falha. Caso haja falha, um arquivo de log será gerado. Falaremos mais dele mais adiante!
-5. Assim que a ferramenta termina de executar e mostra os resultados, ela fica aguardando que o usuário pressione qualquer tecla para que a mesma seja finalizada por completo.
+3. Caso escolha continuar com a execuÃ§Ã£o, ela comeÃ§arÃ¡ a trabalhar em seus arquivos, informando sobre o sucesso ou falha na operaÃ§Ã£o de cada um deles
+4. ApÃ³s a execuÃ§Ã£o completa da ferramenta, ela irÃ¡ exibir na tela o total de arquivos corrigidos e o total de arquivos com falha. Caso haja falha, um arquivo de log serÃ¡ gerado. Falaremos mais dele mais adiante!
+5. Assim que a ferramenta termina de executar e mostra os resultados, ela fica aguardando que o usuÃ¡rio pressione qualquer tecla para que a mesma seja finalizada por completo.
 
 ### Arquivo de log
-Toda vez que uma tentativa de alterar a data e hora de um arquivo falha, uma mensagem detalhada sobre o erro é salva no arquivo log.txt que será armazenado juntamente com as fotos onde a ferramenta trabalhou.
+Toda vez que uma tentativa de alterar a data e hora de um arquivo falha, uma mensagem detalhada sobre o erro Ã© salva no arquivo log.txt que serÃ¡ armazenado juntamente com as fotos onde a ferramenta trabalhou.
 A seguir, um exemplo de como seria a mensagem de erro.
 
 > [2023-09-28 00:53:26] - Erro: Value cannot be null. (Parameter 's') - Arquivo: C:\local\completo\onde\se\encontram\as\fotos\e\videos\20d170927_210207 (1).jpg 
@@ -55,9 +55,9 @@ A seguir, um exemplo de como seria a mensagem de erro.
    >
    > at Program.AlteraDataHoraArquivos(String pasta) in C:\Users\user\source\repos\CorrigiMetaDadosData\Program.cs:line 106
 
-   ### Considerações finais
-   Acredito que esta ferramenta possa ajudar pessoas que, assim como eu, gostam de manter suas lembranças organizadas, seja por fotos em papel, seja na galeria offline do celular ou em algum serviço de armazenamento em nuvem como o Google Fotos.
+   ### ConsideraÃ§Ãµes finais
+   Acredito que esta ferramenta possa ajudar pessoas que, assim como eu, gostam de manter suas lembranÃ§as organizadas, seja por fotos em papel, seja na galeria offline do celular ou em algum serviÃ§o de armazenamento em nuvem como o Google Fotos.
 
-   A ferramenta pode ser baixada na seção de releases aqui no Github. Seu código fonte está disponível e aberto ao público. Sintam-se a vontade para clonar e sugerir melhorias e novas ideias.
+   A ferramenta pode ser baixada na seÃ§Ã£o de releases aqui no Github. Seu cÃ³digo fonte estÃ¡ disponÃ­vel e aberto ao pÃºblico. Sintam-se a vontade para clonar e sugerir melhorias e novas ideias.
 
-   Obrigado por ter lido até aqui, divirtam-se com o projeto e compartilhem com aqueles que você acha que irão gostar da ideia.
+   Obrigado por ter lido atÃ© aqui, divirtam-se com o projeto e compartilhem com aqueles que vocÃª acha que irÃ£o gostar da ideia.
