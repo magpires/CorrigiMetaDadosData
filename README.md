@@ -46,7 +46,7 @@ Após ter o .Net Core 6.0 instalado, seguiremos o passo a passo, que é relativa
 5. Assim que a ferramenta termina de executar e mostra os resultados, ela fica aguardando que o usuário pressione qualquer tecla para que a mesma seja finalizada por completo.
 
 ### Arquivo de log
-Toda vez que uma tentativa de alterar a data e hora de um arquivo falha, uma mensagem detalhada sobre o erro é salva no arquivo log.txt que será armazenado juntamente com as fotos onde a ferramenta trabalhou.
+Toda vez que uma tentativa de alterar a data e hora de um arquivo falha, uma mensagem detalhada sobre o erro é salva no arquivo ```log.txt``` que será armazenado juntamente com as fotos onde a ferramenta trabalhou.
 A seguir, um exemplo de como seria a mensagem de erro.
 
 > [2023-09-28 00:53:26] - Erro: Value cannot be null. (Parameter 's') - Arquivo: C:\local\completo\onde\se\encontram\as\fotos\e\videos\20d170927_210207 (1).jpg 
