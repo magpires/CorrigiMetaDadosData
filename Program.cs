@@ -36,14 +36,27 @@ class Program
 
     static string ExtrairDataDoNome(string nomeArquivo)
     {
-        Match match = Regex.Match(nomeArquivo, @"\d{4}-?\d{2}-?\d{2}");
+        // Tenta extrair a hora no formato yyyyMMddHHmmss
+        Match match = Regex.Match(nomeArquivo, @"\d{4}-?\d{2}-?\d{2}[-_ ]?\d{2}[.:]?\d{2}[.:]?\d{2}");
         if (match.Success)
         {
-            return match.Value.Replace("-", "");
+            // Remove caracteres especiais e formata para "yyyyMMddHHmmss"
+            string dataHoraFormatada = Regex.Replace(match.Value, @"[^0-9]", "");
+            return dataHoraFormatada;
         }
         else
         {
-            return null;
+            // Caso não consiga, tentará extrair no formato yyyyMMdd (sem a hora)
+            match = Regex.Match(nomeArquivo, @"\d{4}-?\d{2}-?\d{2}");
+            if (match.Success)
+            {
+                // Remove caracteres especiais e formata para "yyyyMMddHHmmss" com a hora zerada
+                return match.Value.Replace("-", "") + "000000";
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -103,7 +116,7 @@ class Program
             {
                 FileInfo arquivoInfo = new FileInfo(arquivo);
                 string dataString = ExtrairDataDoNome(arquivoInfo.Name);
-                DateTime dataCorrigida = DateTime.ParseExact(dataString, "yyyyMMdd", null);
+                DateTime dataCorrigida = DateTime.ParseExact(dataString, "yyyyMMddHHmmss", null);
                 DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.LastWriteTime.Hour, arquivoInfo.LastWriteTime.Minute, arquivoInfo.LastWriteTime.Second);
 
                 var datasDiferentes = novaData.Date != arquivoInfo.LastWriteTime.Date;
