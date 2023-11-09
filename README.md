@@ -24,7 +24,7 @@ A ferramenta dá suporte aos principais arquivos de mídia, são eles:
 - .avi
 
 ### Funcionamento
-Seu fincionamento é relativamente simples. A maioria destas fotos possuem em seus nomes de arquivo a data em que foi tirada a foto. Alguns contam com a hora também. Além disso, algumas fotos tem o metadado "Tirado em" com a informação exata de quando aquela imagem foi fotografada, dentre outras propriedades. A ferramenta funciona capturando estas informações e alterando o metadado que informa a data da última modificação do arquivo (metadado este que geralmente é utilizado pelas galerias de fotos para se situarem no dia em que a foto foi tirada).
+Seu fincionamento é relativamente simples. A maioria destas fotos possuem em seus nomes de arquivo a data em que foi tirada a foto. Alguns contam com a hora também. Além disso, algumas fotos tem o metadado "Tirado em" com a informação exata de quando aquela imagem foi fotografada, dentre outras propriedades. Arquivos de vídeo contam com o metadado "Mídia criada". A ferramenta funciona capturando estas informações e alterando o metadado que informa a data da última modificação do arquivo (metadado este que geralmente é utilizado pelas galerias de fotos para se situarem no dia em que a foto foi tirada).
 
 > **AVISO IMPORTANTE!** Isso fará com que todos os arquivos de fotos e vídeos presentes na pasta informada sejam modificados. Tenha sempre uma cópia de segurança dos mesmos para que caso ocorra quaisquer erro, você possa recuperá-los.
 
@@ -55,9 +55,14 @@ A seguir, um exemplo de como seria a mensagem de erro.
    >
    > at Program.AlteraDataHoraArquivos(String pasta) in C:\Users\user\source\repos\CorrigiMetaDadosData\Program.cs:line 106
 
-   ### Considerações finais
-   Acredito que esta ferramenta possa ajudar pessoas que, assim como eu, gostam de manter suas lembranças organizadas, seja por fotos em papel, seja na galeria offline do celular ou em algum serviço de armazenamento em nuvem como o Google Fotos.
+### Considerações finais
+Acredito que esta ferramenta possa ajudar pessoas que, assim como eu, gostam de manter suas lembranças organizadas, seja por fotos em papel, seja na galeria offline do celular ou em algum serviço de armazenamento em nuvem como o Google Fotos.
 
-   A ferramenta pode ser baixada na seção de releases aqui no Github. Seu código fonte está disponível e aberto ao público. Sintam-se a vontade para clonar e sugerir melhorias e novas ideias.
+A ferramenta pode ser baixada na seção de releases aqui no Github. Seu código fonte está disponível e aberto ao público. Sintam-se a vontade para clonar e sugerir melhorias e novas ideias.
 
-   Obrigado por ter lido até aqui, divirtam-se com o projeto e compartilhem com aqueles que você acha que irão gostar da ideia.
+Obrigado por ter lido até aqui, divirtam-se com o projeto e compartilhem com aqueles que você acha que irão gostar da ideia.
+
+### Informações adicionais e créditos
+Esta ferramenta utiliza o **ExifTool by Phil Harvey** para fixar o metadado "Mídia Criada" de arquivos de vídeo. 
+Sou imensamente grato e faço, com o maior prazer, a menção honrosa pois sem sua ferramenta, não seria possível que eu lançasse
+a segunda versão de minha ferramenta. O link para o site do projeto pode ser acessado clicando [AQUI](https://exiftool.org/)!
