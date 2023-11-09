@@ -2,9 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Diagnostics;
+using System.Text;
+using System.Reflection;
 
 class Program
 {
@@ -60,7 +62,7 @@ class Program
         }
     }
 
-    static DateTime ObtemTiradoEm(DateTime dataAtual, DateTime modificadoEm, string caminhoArquivo)
+    static DateTime ObtemTiradoEmJpg(DateTime dataCorrigida, string caminhoArquivo)
     {
         Image image = Image.FromFile(caminhoArquivo);
         int[] propertyIds = image.PropertyIdList;
@@ -73,17 +75,94 @@ class Program
             string dataStringTiradoEm = System.Text.Encoding.ASCII.GetString(propriedadeTiradoEm.Value).Replace("\0", "");
             DateTime dataObjetoTiradoEm = DateTime.ParseExact(dataStringTiradoEm, "yyyy:MM:dd HH:mm:ss", null);
             image.Dispose();
-
-            var dataHorasDiferentes = dataObjetoTiradoEm != modificadoEm;
-
-            if (dataHorasDiferentes)
-                return dataObjetoTiradoEm;
-            else
-                return dataAtual;
+            return dataObjetoTiradoEm;
         }
-        else
+
+        return DateTime.MinValue;
+    }
+
+    static string AtualizaTiradoEmJpg(DateTime dataCorrigida, string caminhoArquivo, string extensao)
+    {
+        Image image = Image.FromFile(caminhoArquivo);
+        int[] propertyIds = image.PropertyIdList;
+
+        var possuiCriadoEm = propertyIds.Contains(36867);
+
+        if (possuiCriadoEm)
         {
-            return dataAtual;
+            PropertyItem propriedadeTiradoEmAntiga = image.GetPropertyItem(36867);
+            PropertyItem novaPropriedade = image.GetPropertyItem(36867);
+            novaPropriedade.Id = propriedadeTiradoEmAntiga.Id;
+            novaPropriedade.Len = propriedadeTiradoEmAntiga.Len;
+            novaPropriedade.Type = propriedadeTiradoEmAntiga.Type;
+            novaPropriedade.Value = Encoding.ASCII.GetBytes(dataCorrigida.ToString("yyyy:MM:dd HH:mm:ss"));
+            image.SetPropertyItem(novaPropriedade);
+            image.Save(caminhoArquivo.Replace(extensao, "_novo" + extensao));
+            image.Dispose();
+
+            return caminhoArquivo.Replace(extensao, "_novo" + extensao);
+        }
+
+        return caminhoArquivo;
+    }
+
+    static string AtualizarDataHoraMidiaCriadaMp43Gp(string caminhoExifTool, string caminhoArquivo, DateTime novaDataHora)
+    {
+        DateTime novaDataHoraUtc = novaDataHora.ToUniversalTime();
+
+        using (Process processo = new Process())
+        {
+            processo.StartInfo.FileName = caminhoExifTool;
+            processo.StartInfo.Arguments = $"-CreateDate=\"{novaDataHoraUtc:yyyy:MM:dd HH:mm:ss}\" -overwrite_original \"{caminhoArquivo}\"";
+            processo.StartInfo.UseShellExecute = false;
+            processo.StartInfo.RedirectStandardOutput = true;
+            processo.StartInfo.RedirectStandardError = true;
+            processo.StartInfo.CreateNoWindow = true;
+
+            processo.Start();
+            processo.WaitForExit();
+
+            string saida = processo.StandardOutput.ReadToEnd();
+            string saidaErro = processo.StandardError.ReadToEnd();
+
+            if (!string.IsNullOrEmpty(saidaErro))
+            {
+                return saidaErro;
+            }
+
+            return null;
+        }
+    }
+
+    static DateTimeOffset ExtrairDataCriacao3GpMp4(string caminhoExifTool, string caminhoArquivo)
+    {
+        using (Process processo = new Process())
+        {
+            processo.StartInfo.FileName = caminhoExifTool;
+            processo.StartInfo.Arguments = $"-CreateDate -n -s3 -d \"%Y-%m-%d %H:%M:%S\" \"{caminhoArquivo}\"";
+            processo.StartInfo.UseShellExecute = false;
+            processo.StartInfo.RedirectStandardOutput = true;
+            processo.StartInfo.CreateNoWindow = true;
+
+            processo.Start();
+            string resultado = processo.StandardOutput.ReadToEnd();
+            processo.WaitForExit();
+
+            if (resultado == "0000:00:00 00:00:00\r\n")
+                return DateTimeOffset.MinValue;
+
+            int posicaoOffset = resultado.IndexOf('-');
+
+            if (posicaoOffset >= 0)
+            {
+                resultado = resultado.Substring(0, posicaoOffset).Trim();
+            }
+
+            DateTimeOffset dataExtraiada = DateTimeOffset.ParseExact(resultado.Trim(), "yyyy:MM:dd HH:mm:ss", null);
+            TimeSpan offsetOriginal = dataExtraiada.Offset;
+            dataExtraiada = dataExtraiada.Add(offsetOriginal);
+
+            return dataExtraiada;
         }
     }
 
@@ -117,28 +196,103 @@ class Program
                 FileInfo arquivoInfo = new FileInfo(arquivo);
                 string dataString = ExtrairDataDoNome(arquivoInfo.Name);
                 DateTime dataCorrigida = DateTime.ParseExact(dataString, "yyyyMMddHHmmss", null);
-                DateTime novaData = new DateTime(dataCorrigida.Year, dataCorrigida.Month, dataCorrigida.Day, arquivoInfo.LastWriteTime.Hour, arquivoInfo.LastWriteTime.Minute, arquivoInfo.LastWriteTime.Second);
 
-                var datasDiferentes = novaData.Date != arquivoInfo.LastWriteTime.Date;
+                var datasDiferentes = dataCorrigida != arquivoInfo.LastWriteTime;
+                bool datasVideoDiferentes = false;
+                bool datasJpgDiferentes = false;
+                var datasUtcDiferentes = dataCorrigida.ToUniversalTime() != arquivoInfo.LastWriteTimeUtc;
 
-                if (datasDiferentes)
-                {
-                    var arquivoImagemJpg = arquivoInfo.Extension.ToLower() == ".jpg"
+                var arquivoImagemJpg = arquivoInfo.Extension.ToLower() == ".jpg"
                                     || arquivoInfo.Extension.ToLower() == ".jpeg";
 
-                    if (arquivoImagemJpg)
-                        novaData = ObtemTiradoEm(novaData, arquivoInfo.LastWriteTime, arquivoInfo.FullName) ;
+                var arquivoVideo3GpMp4 = arquivoInfo.Extension.ToLower() == ".mp4" || arquivoInfo.Extension.ToLower() == ".3gp";
+                var diretorioAtual = AppContext.BaseDirectory;
+                var caminhoExifTool = Path.Combine(diretorioAtual,"Utils", "Exiftool", "exiftool.exe");
+                string caminhoCompletoExifTool = Path.GetFullPath(caminhoExifTool);
+                DateTimeOffset dataAntigaVideo = new DateTimeOffset();
+                DateTime dataAntigaJpg = new DateTime();
 
-                    arquivoInfo.LastWriteTime = novaData;
-                    Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} - Data corrigida com sucesso para o arquivo {arquivoInfo.Name}");
-                    totalArquivosCorrigidos++;
+                if (arquivoVideo3GpMp4)
+                {
+                    dataAntigaVideo = ExtrairDataCriacao3GpMp4(caminhoCompletoExifTool, arquivo);
+                    datasVideoDiferentes = (dataAntigaVideo != DateTimeOffset.MinValue) && (dataAntigaVideo.Date != dataCorrigida.Date);
+                }
+
+                if (arquivoImagemJpg)
+                {
+                    dataAntigaJpg = ObtemTiradoEmJpg(dataCorrigida, arquivoInfo.FullName);
+                    datasJpgDiferentes = (dataAntigaJpg != DateTime.MinValue) && (dataAntigaJpg.Date != dataCorrigida.Date);
+                }
+
+                if ((datasDiferentes && datasUtcDiferentes) || datasVideoDiferentes || datasJpgDiferentes)
+                {
+                    if(arquivoVideo3GpMp4)
+                    {
+                        var saidaErro = AtualizarDataHoraMidiaCriadaMp43Gp(caminhoCompletoExifTool, arquivo, dataCorrigida);
+
+                        if (saidaErro != null)
+                        {
+                            var mensagem = $"A data do arquivo de vídeo {arquivoInfo.Name} foi corrigida, mas não foi possível corrigir o metadado 'Mídia Criada' do mesmo, devido a um erro do " +
+                                                $"ExifTool.";
+
+                            if (datasDiferentes)
+                                arquivoInfo.LastWriteTime = dataCorrigida;
+
+                            if (datasUtcDiferentes)
+                                arquivoInfo.LastWriteTimeUtc = dataCorrigida.ToUniversalTime();
+
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} - {mensagem} Consulte o arquivo log.txt para mais detalhes!");
+                            Console.ResetColor();
+
+                            using (StreamWriter logWriter = new StreamWriter($@"{pasta}\log.txt", true))
+                            {
+                                logWriter.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {mensagem}" +
+                                                    $"O erro erro lançado foi\n\n{saidaErro}");
+                            }
+                            totalArquivosComFalha++;
+                            continue;
+                        }
+                    }
+
+                    if (arquivoImagemJpg)
+                    {
+                        var caminhoNovoJpgTiradoEmCorrigido = AtualizaTiradoEmJpg(dataCorrigida, arquivoInfo.FullName, arquivoInfo.Extension);
+
+                        if (caminhoNovoJpgTiradoEmCorrigido != arquivoInfo.FullName)
+                        {
+                            arquivoInfo.Delete();
+                            FileInfo arquivoInfoCorrigido = new FileInfo(caminhoNovoJpgTiradoEmCorrigido);
+                            arquivoInfoCorrigido.MoveTo(arquivoInfo.FullName);
+                            arquivoInfo = new FileInfo(arquivo);
+                        }
+
+                        datasDiferentes = dataCorrigida != arquivoInfo.LastWriteTime;
+                        datasUtcDiferentes = dataCorrigida.ToUniversalTime() != arquivoInfo.LastWriteTimeUtc;
+                    }
+
+                    if (datasDiferentes)
+                        arquivoInfo.LastWriteTime = dataCorrigida;
+
+                    if (datasUtcDiferentes)
+                        arquivoInfo.LastWriteTimeUtc = dataCorrigida.ToUniversalTime();
+
+                    if (datasDiferentes || datasUtcDiferentes || datasVideoDiferentes)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - {index} de {arquivos.Count()} - Data corrigida com sucesso para o arquivo {arquivoInfo.Name}");
+                        Console.ResetColor();
+                        totalArquivosCorrigidos++;
+                    }
                 }
             }
             catch (Exception e)
             {
                 using (StreamWriter logWriter = new StreamWriter($@"{pasta}\log.txt", true))
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Falha ao alterar o arquivo {arquivo}");
+                    Console.ResetColor();
                     logWriter.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - Erro: {e.Message} - Arquivo: {arquivo} \n\n {e.StackTrace}\n");
                     totalArquivosComFalha++;
                 }
